@@ -7,12 +7,14 @@ import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Clase abstracta que representa un objeto que cae desde el cielo.
- * Extiende GameObject (GM-4) y aplica encapsulamiento .
+ * Extiende GameObject (GM-4) y aplica encapsulamiento (GM-5).
+ * Utiliza el patron Strategy (GM-7) para definir su movimiento.
  * Es padre de ResourceDrop y DangerDrop.
  */
 public abstract class DropItem extends GameObject {
 
     private float velocidadY;
+    private MovementStrategy movementStrategy;
 
     /**
      * Constructor de DropItem.
@@ -22,6 +24,7 @@ public abstract class DropItem extends GameObject {
     public DropItem(Texture texture, float velocidadY) {
         super(texture, MathUtils.random(0, 800 - 64), 480, 64, 64);
         this.velocidadY = velocidadY;
+        this.movementStrategy = new NormalFall(); // estrategia por defecto
     }
 
     /**
@@ -48,8 +51,8 @@ public abstract class DropItem extends GameObject {
 
     @Override
     public void update() {
-        // movimiento de caida
-        setY(getY() - velocidadY * Gdx.graphics.getDeltaTime());
+        // delega el movimiento a la estrategia asignada (GM-7)
+        movementStrategy.mover(this, Gdx.graphics.getDeltaTime());
     }
 
     @Override
@@ -65,5 +68,13 @@ public abstract class DropItem extends GameObject {
 
     public void setVelocidadY(float velocidadY) {
         this.velocidadY = velocidadY;
+    }
+
+    public MovementStrategy getMovementStrategy() {
+        return movementStrategy;
+    }
+
+    public void setMovementStrategy(MovementStrategy movementStrategy) {
+        this.movementStrategy = movementStrategy;
     }
 }
